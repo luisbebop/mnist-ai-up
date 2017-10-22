@@ -1,7 +1,10 @@
 # mnist-ai-up
 
-Mnist recognizer using AWS lambda. The idea is based on [this tutorial](https://github.com/llSourcell/how_to_deploy_a_keras_model_to_production).
-It uses Node.js to train the network and AWS lambda to serve the API endpoint.
+AI that recognizes handwriteen digits (MNIST) using Javascript and AWS lambda. The idea is based on [this tutorial](https://github.com/llSourcell/how_to_deploy_a_keras_model_to_production).
+
+It uses [Neataptic](https://github.com/wagenaartje/neataptic) to train the network and [AWS lambda](https://aws.amazon.com/lambda/) to serve the API endpoint.
+
+[Live demo](https://xzr0dc9xba.execute-api.us-west-2.amazonaws.com/development/mnist.html)
 
 ## Setup
 
