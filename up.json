@@ -1,0 +1,12 @@
+{
+  "name": "mnist-ai-up",
+  "hooks": {
+    "build": "make"
+  },
+  "proxy": {
+    "command": "./node-v8.7.0-linux-x64/bin/node mnist-serve.js"
+  },
+  "lambda": {
+    "memory": 1024
+  }
+}

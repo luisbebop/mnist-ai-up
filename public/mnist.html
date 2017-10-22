@@ -1,0 +1,209 @@
+<html>
+  <body>
+    <h1>Digit Recognition</h1>
+    <p id='head'>Click to draw / Double Click anywhere to Clear</p>
+    <canvas id='c' width='280' height='280' style='border:1px solid black;'></canvas></p>
+    <canvas id='thumbnail' width='28' height='28' style='border:1px solid black;'></canvas></p>
+    <button id="checkNumber" onclick="checkNumber()">Check number</button>
+        
+    <script>
+      // computes center of mass of digit, for centering
+      // note 1 stands for black (0 white) so we have to invert.
+      function centerImage(img) {
+          var meanX = 0;
+          var meanY = 0;
+          var rows = img.length;
+          var columns = img[0].length;
+          var sumPixels = 0;
+          for (var y = 0; y < rows; y++) {
+              for (var x = 0; x < columns; x++) {
+                  var pixel = (1 - img[y][x]);
+                  sumPixels += pixel;
+                  meanY += y * pixel;
+                  meanX += x * pixel;
+              }
+          }
+          meanX /= sumPixels;
+          meanY /= sumPixels;
+
+          var dY = Math.round(rows/2 - meanY);
+          var dX = Math.round(columns/2 - meanX);
+          return {transX: dX, transY: dY};
+      }
+
+      // given grayscale image, find bounding rectangle of digit defined
+      // by above-threshold surrounding
+      function getBoundingRectangle(img, threshold) {
+          var rows = img.length;
+          var columns = img[0].length;
+          var minX=columns;
+          var minY=rows;
+          var maxX=-1;
+          var maxY=-1;
+          for (var y = 0; y < rows; y++) {
+              for (var x = 0; x < columns; x++) {
+                  if (img[y][x] < threshold) {
+                      if (minX > x) minX = x;
+                      if (maxX < x) maxX = x;
+                      if (minY > y) minY = y;
+                      if (maxY < y) maxY = y;
+                  }
+              }
+          }
+          return { minY: minY, minX: minX, maxY: maxY, maxX: maxX};
+      }
+      
+      // take canvas image and convert to grayscale. Mainly because my
+      // own functions operate easier on grayscale, but some stuff like
+      // resizing and translating is better done with the canvas functions
+      function imageDataToGrayscale(imgData) {
+          var grayscaleImg = [];
+          for (var y = 0; y < imgData.height; y++) {
+              grayscaleImg[y]=[];
+              for (var x = 0; x < imgData.width; x++) {
+                  var offset = y * 4 * imgData.width + 4 * x;
+                  var alpha = imgData.data[offset+3];
+                  // weird: when painting with stroke, alpha == 0 means white;
+                  // alpha > 0 is a grayscale value; in that case I simply take the R value
+                  if (alpha == 0) {
+                      imgData.data[offset] = 255;
+                      imgData.data[offset+1] = 255;
+                      imgData.data[offset+2] = 255;
+                  }
+                  imgData.data[offset+3] = 255;
+                  // simply take red channel value. Not correct, but works for
+                  // black or white images.
+                  grayscaleImg[y][x] = imgData.data[y*4*imgData.width + x*4 + 0] / 255;
+              }
+          }
+          return grayscaleImg;
+      }
+      
+      var c = document.getElementById('c');
+      var ctx = c.getContext('2d')
+      var paint = false
+      var hidden = false
+      
+      window.onmousedown = toggle
+      window.onmousemove = draw
+      window.onmouseup = drawoff
+      window.ondblclick = clear
+
+      function toggle(){ 
+        if (paint) { 
+          paint = false;
+        } else { 
+          paint = true;
+        }
+      }
+      
+      function draw(e){
+        var rect =  c.getBoundingClientRect();
+        if (paint && !hidden) ctx.fillRect(e.x - rect.left,e.y - rect.top,20,20)
+      }
+      
+      function drawoff(){ 
+        paint = false;    
+      }
+      
+      function clear(){
+        ctx.clearRect(0,0,280,280);
+      }
+      
+      function checkNumber(){                
+        var imgData = ctx.getImageData(0, 0, 280, 280);
+        var grayscaleImg = imageDataToGrayscale(imgData);
+        var boundingRectangle = getBoundingRectangle(grayscaleImg, 0.01);
+        var trans = centerImage(grayscaleImg); // [dX, dY] to center of mass
+        
+        // copy image to hidden canvas, translate to center-of-mass, then
+        // scale to fit into a 200x200 box (see MNIST calibration notes on
+        // Yann LeCun's website)
+        var canvasCopy = document.createElement("canvas");
+        canvasCopy.width = imgData.width;
+        canvasCopy.height = imgData.height;
+        var copyCtx = canvasCopy.getContext("2d");
+        var brW = boundingRectangle.maxX+1-boundingRectangle.minX;
+        var brH = boundingRectangle.maxY+1-boundingRectangle.minY;
+        var scaling = 190 / (brW>brH?brW:brH);
+        // scale
+        copyCtx.translate(c.width/2, c.height/2);
+        copyCtx.scale(scaling, scaling);
+        copyCtx.translate(-c.width/2, -c.height/2);
+        // translate to center of mass
+        copyCtx.translate(trans.transX, trans.transY);
+        copyCtx.drawImage(ctx.canvas, 0, 0);
+        
+        // now bin image into 10x10 blocks (giving a 28x28 image)
+        imgData = copyCtx.getImageData(0, 0, 280, 280);
+        grayscaleImg = imageDataToGrayscale(imgData);
+        console.log(grayscaleImg);
+        
+        var nnInput = new Array(784), nnInput2 = [];
+        for (var y = 0; y < 28; y++) {
+          for (var x = 0; x < 28; x++) {
+            var mean = 0;
+            for (var v = 0; v < 10; v++) {
+              for (var h = 0; h < 10; h++) {
+                mean += grayscaleImg[y*10 + v][x*10 + h];
+              }
+            }
+            mean = (1 - mean / 100); // average and invert
+            nnInput[x*28+y] = (mean - .5) / .5;
+          }
+        }
+        
+        console.log(nnInput);
+        
+        var thumbnailCtx = document.getElementById('thumbnail').getContext("2d");
+        var thumbnail =  thumbnailCtx.getImageData(0, 0, 28, 28);
+        
+        // for visualization/debugging: paint the input to the neural net.
+        //if (document.getElementById('preprocessing').checked == true) {
+        ctx.clearRect(0, 0, c.width, c.height);
+        ctx.drawImage(copyCtx.canvas, 0, 0);
+        for (var y = 0; y < 28; y++) {
+          for (var x = 0; x < 28; x++) {
+            var block = ctx.getImageData(x * 10, y * 10, 10, 10);
+            var newVal = 255 * (0.5 - nnInput[x*28+y]/2);
+            nnInput2.push(Math.round((255-newVal)/255*100)/100);
+            for (var i = 0; i < 4 * 10 * 10; i+=4) {
+              block.data[i] = newVal;
+              block.data[i+1] = newVal;
+              block.data[i+2] = newVal;
+              block.data[i+3] = 255;
+            }
+            ctx.putImageData(block, x * 10, y * 10);
+
+            thumbnail.data[(y*28 + x)*4] = newVal;
+            thumbnail.data[(y*28 + x)*4 + 1] = newVal;
+            thumbnail.data[(y*28 + x)*4 + 2] = newVal;
+            thumbnail.data[(y*28 + x)*4 + 3] = 255;
+          }
+        }
+        
+        thumbnailCtx.putImageData(thumbnail, 0, 0);
+        
+        console.log(JSON.stringify(nnInput2));
+         
+        // make http request
+        var http = new XMLHttpRequest();
+        var url = "checkNumber";
+        http.open("POST", url, true);
+
+        //Send the proper header information along with the request
+        http.setRequestHeader("Content-type", "application/json");
+
+        //Call a function when the state changes.
+        http.onreadystatechange = function() {
+          if(http.readyState == 4 && http.status == 200) {
+            alert(http.responseText);
+            clear();
+          }
+        }
+        http.send(JSON.stringify({"input": nnInput2}));
+      }
+    </script>
+
+</body>
+</html>
