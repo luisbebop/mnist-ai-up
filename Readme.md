@@ -7,8 +7,11 @@ I decided to use `javascript` and `microservices` to deploy this project, becaus
 This network recognizes digits using a `multilayer perceptron`. I strongly recommend you to watch the videos bellow to understand the mathematical concepts behind this algorithm:
 
 [But what *is* a Neural Network? | Deep learning, chapter 1](https://www.youtube.com/watch?v=aircAruvnKk)
+
 [Gradient descent, how neural networks learn | Deep learning, chapter 2](https://www.youtube.com/watch?v=IHZwWFHWa-w)
+
 [What is backpropagation and what is it actually doing? | Deep learning, chapter 3](https://www.youtube.com/watch?v=Ilg3gGewQ5U)
+
 [Backpropagation calculus | Appendix to deep learning chapter 3](https://www.youtube.com/watch?v=tIeHLnjs5U8)
 
 ## Details
