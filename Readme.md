@@ -24,7 +24,7 @@ I decided to use `Neataptic` instea of `Keras`, because it opens the `possibilit
 
 [Neuroevolution](https://www.oreilly.com/ideas/neuroevolution-a-different-kind-of-deep-learning)
 
-`Neuroevolutions` is increasingly getting better.
+`Neuroevolution` is increasingly getting better.
 
 [2017: The Year of Neuroevolution](https://medium.com/@moocaholic/2017-the-year-of-neuroevolution-30e59ae8fe18)
 
