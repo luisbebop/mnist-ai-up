@@ -1,6 +1,6 @@
 # mnist-ai-up (Deep learning intro)
 
-This project shows you how to use `machine learning` to recognize handwriteen digits. Consider this the `Hello World` of `AI`.
+This project teaches you how to use `machine learning` to recognize handwriteen digits. Consider this the `Hello World` of `AI`.
 
 I decided to use `javascript` and `microservices` to deploy this project, because it makes easy to run examples, without the need of deploying servers or learn a new programming language.
 
