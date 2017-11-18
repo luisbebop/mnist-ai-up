@@ -27,6 +27,7 @@ I decided to use `Neataptic` instea of `Keras`, because it opens the `possibilit
 `Neuroevolution` is increasingly getting better.
 
 [2017: The Year of Neuroevolution](https://medium.com/@moocaholic/2017-the-year-of-neuroevolution-30e59ae8fe18)
+[A Visual Guide to Evolution Strategies](http://blog.otoro.net/2017/10/29/visual-evolution-strategies/)
 
 ## Demo
 
