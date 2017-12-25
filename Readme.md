@@ -30,6 +30,8 @@ I decided to use `Neataptic` instea of `Keras`, because it opens the `possibilit
 
 [A Visual Guide to Evolution Strategies](http://blog.otoro.net/2017/10/29/visual-evolution-strategies/)
 
+[Simple NN evolution](https://github.com/nathanrooy/evolving-simple-organisms)
+
 ## Demo
 
 [Live demo](https://xzr0dc9xba.execute-api.us-west-2.amazonaws.com/development/mnist.html)
