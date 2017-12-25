@@ -32,6 +32,8 @@ I decided to use `Neataptic` instea of `Keras`, because it opens the `possibilit
 
 [Simple NN evolution](https://github.com/nathanrooy/evolving-simple-organisms)
 
+[Welcoming the Era of Deep Neuroevolution](https://eng.uber.com/deep-neuroevolution/)
+
 ## Demo
 
 [Live demo](https://xzr0dc9xba.execute-api.us-west-2.amazonaws.com/development/mnist.html)
